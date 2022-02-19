@@ -3,6 +3,8 @@ const { PORT, ADDR } = require('./constants/env');
 
 const app = express();
 
+require("./models");
+
 require("./filters")(app);
 
 require("./controllers")(app);
