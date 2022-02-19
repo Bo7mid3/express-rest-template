@@ -2,8 +2,7 @@ const { User } = require("../models");
 
 module.exports = (app) => {
     app.post("/register", (req, res) => {
-        const { email, password } = req.body;
-        let uniq = await User.findOne({ email: email });
+        /* let uniq = User.findOne({ email: email });
         if (uniq) {
             if (uniq.err) {
                 res.sendStatus(500);
@@ -11,8 +10,13 @@ module.exports = (app) => {
             }
             res.sendStatus(400);
             return;
+        } */
+        const user = new User(req.body);
+        const res = await user.register();
+        if (res.err) {
+            console.log(err);
+            return res.sendStatus(500);
         }
-
-        res.sendStatus(200);
+        return res.sendStatus(200);
     })
 }

@@ -1,3 +1,3 @@
 module.exports = (app) => {
-    require("../utils/require-folder-contents")(app, __dirname);
+    require("../utils/require-controllers")(app, __dirname);
 }
