@@ -20,17 +20,27 @@ const schema = new Schema({
   },
 });
 
-const Model = model("User", schema);
-
-const methods = schema.methods; 
-
-methods.hashPassword = function() {
+schema.methods.hashPassword = function() {
   const salt = bcrypt.genSaltSync(10);
   this.password = bcrypt.hashSync(this.password, salt);
 };
 
-methods.register = async function(user) {
-  Model.findOne();
-} 
+schema.methods.register = async function() {
+  const res = await Model.findOne({email: this.email});
+  if (res) {
+    if (res.err)
+      return {err: "An error connecting to the database"};
+    return {err: "User already exist"};
+  }
+  this.hashPassword();
+  this.save();
+  return this;
+}
+
+const Model = model("User", schema);
+
+//const { methods } = schema; 
+
+
 
 module.exports = Model;
