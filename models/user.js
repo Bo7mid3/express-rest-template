@@ -11,6 +11,7 @@ const schema = new Schema({
   email: String,
   password: String,
   type: {
+    required: true,
     type: String,
     enum: ["Client", "Repairperson"],
   },
@@ -20,17 +21,17 @@ const schema = new Schema({
   },
 });
 
-schema.methods.hashPassword = function() {
+schema.methods.hashPassword = function () {
   const salt = bcrypt.genSaltSync(10);
   this.password = bcrypt.hashSync(this.password, salt);
 };
 
-schema.methods.register = async function() {
-  const res = await Model.findOne({email: this.email});
+schema.methods.register = async function () {
+  const res = await Model.findOne({ email: this.email });
   if (res) {
     if (res.err)
-      return {err: "An error connecting to the database"};
-    return {err: "User already exist"};
+      return { err: res.err };
+    return { err: "User already exist" };
   }
   this.hashPassword();
   this.save();
