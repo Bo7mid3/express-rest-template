@@ -1,5 +1,6 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
+var jwt = require('jsonwebtoken');
 
 const schema = new Schema({
   person: {
@@ -38,10 +39,12 @@ schema.methods.register = async function () {
   return this;
 }
 
-const Model = model("User", schema);
+schema.methods.generateToken = function() {
+  const payload = { email: this.email }
+  const token = jwt.sign(payload, process.env.SECRET_KEY);
+  return token;
+}
 
-//const { methods } = schema; 
-
-
+const Model = model("User", schema); 
 
 module.exports = Model;

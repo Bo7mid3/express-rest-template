@@ -1,7 +1,8 @@
-const localAuth = require("../services/local/auth");
+const localAuth = require("../services/local/form-auth");
 
 module.exports = (app) => {
     app.post("/login", localAuth, (req, res) => {
-        res.sendStatus(200);
+        const token = req.user.generateToken();
+        res.status(200).json({ token });
     })
 }
