@@ -35,8 +35,7 @@ schema.methods.register = async function () {
     return { err: "User already exist" };
   }
   this.hashPassword();
-  this.save();
-  return this;
+  return this.save();
 }
 
 schema.methods.generateToken = function() {
