@@ -1,8 +1,10 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
+const AutoIncrementPlugin = require("../utils/plugins/mongoose-auto-increment");
 var jwt = require('jsonwebtoken');
 
 const schema = new Schema({
+  _id: Number,
   person: {
     firstName: String,
     middleName: String,
@@ -21,6 +23,8 @@ const schema = new Schema({
     contentType: String,
   },
 });
+
+schema.plugin(AutoIncrementPlugin,{id: 'user_id_counter'});
 
 schema.methods.hashPassword = function () {
   const salt = bcrypt.genSaltSync(10);
