@@ -1,4 +1,4 @@
-const tokenAuth = require("../services/local/token-auth");
+const tokenAuth = require("../services/local/auth/token-auth");
 const { PROTECTED_ROUTES } = require("../constants/routes");
 
 module.exports = (app) => {

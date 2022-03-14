@@ -1,4 +1,4 @@
-const localAuth = require("../services/local/form-auth");
+const localAuth = require("../services/local/auth/form-auth");
 
 module.exports = (app) => {
     app.post("/api/login", localAuth, (req, res) => {
