@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcryptjs");
 const AutoIncrementPlugin = require("../utils/plugins/mongoose-auto-increment");
-var jwt = require('jsonwebtoken');
+var jwt = require("jsonwebtoken");
 
 const schema = new Schema({
   _id: Number,
@@ -12,7 +12,10 @@ const schema = new Schema({
     tel: Number,
   },
   email: String,
-  password: String,
+  password: {
+    type: String,
+    select: false,
+  },
   type: {
     required: true,
     type: String,
@@ -24,7 +27,7 @@ const schema = new Schema({
   },
 });
 
-schema.plugin(AutoIncrementPlugin,{id: 'user_id_counter'});
+schema.plugin(AutoIncrementPlugin, { id: "user_id_counter" });
 
 schema.methods.hashPassword = function () {
   const salt = bcrypt.genSaltSync(10);
@@ -34,20 +37,19 @@ schema.methods.hashPassword = function () {
 schema.methods.register = async function () {
   const res = await Model.findOne({ email: this.email });
   if (res) {
-    if (res.err)
-      return { err: res.err };
+    if (res.err) return { err: res.err };
     return { err: "User already exist" };
   }
   this.hashPassword();
   return this.save();
-}
+};
 
-schema.methods.generateToken = function() {
-  const payload = { email: this.email }
+schema.methods.generateToken = function () {
+  const payload = { email: this.email };
   const token = jwt.sign(payload, process.env.SECRET_KEY);
   return token;
-}
+};
 
-const Model = model("User", schema); 
+const Model = model("User", schema);
 
 module.exports = Model;

@@ -1,34 +1,30 @@
+const passport = require("passport");
+const tokenAuth = require("../services/local/auth/token-auth");
+
 module.exports = (server) => {
-    const io = require('socket.io')(server, {
-        methods: ["GET", "POST"]
-    });
-    io.use((socket, next) => {
-        if (socket.handshake.query && socket.handshake.query.token) {
-          jwt.verify(socket.handshake.query.token, process.env.SECRET_KEY, function(err, payload) {
-            if (err) return next(new Error('Authentication error'));
-            const { email } = payload;
-            socket.email = email;
-            /*socket.friends = [];
-            Friend.find({
-              $or: [
-                { friend1: username },
-                { friend2: username }
-              ]
-            }, (err, friends) => {
-              if (err)
-                return next(new Error('Database connection error'))
-              for (const friend of friends) {
-                socket.friends.push(friend.friend1 == username ? friend.friend2 : friend.friend1)
-              }
-            })*/
-            next();
-          });
-        }
-        else {
-          next(new Error('Authentication error'));
-        }
-      }).on('connection', async (socket) => {
-        //console.log("user connected");
-        socket.on("join", (msg) => console.log("user connected"));
-    });
-}
+  const io = require("socket.io")(server, {
+    cors: {
+      origins: ["*"],
+      handlePreflightRequest: (req, res) => {
+        const headers = {
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
+          "Access-Control-Allow-Credentials": true,
+        };
+        res.writeHead(200, headers);
+        res.end();
+      },
+    },
+    methods: ["GET", "POST"],
+  });
+
+  const wrapMiddlewareForSocketIo = (middleware) => (socket, next) => {
+    middleware(socket.request, {}, next);
+  };
+  io.use(wrapMiddlewareForSocketIo(passport.initialize()));
+  io.use(wrapMiddlewareForSocketIo(tokenAuth));
+
+  io.on("connection", async (socket) => {
+    socket.on("join", (msg) => console.log(socket.request.user));
+  });
+};
