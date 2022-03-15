@@ -1,30 +1,16 @@
-const passport = require("passport");
-const tokenAuth = require("../services/local/auth/token-auth");
+const auth = require("./filters/auth");
+const { store, initStore } = require("./store");
 
-module.exports = (server) => {
-  const io = require("socket.io")(server, {
-    cors: {
-      origins: ["*"],
-      handlePreflightRequest: (req, res) => {
-        const headers = {
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Allow-Origin": req.headers.origin, //or the specific origin you want to give access to,
-          "Access-Control-Allow-Credentials": true,
-        };
-        res.writeHead(200, headers);
-        res.end();
-      },
-    },
-    methods: ["GET", "POST"],
-  });
+module.exports = async (server) => {
 
-  const wrapMiddlewareForSocketIo = (middleware) => (socket, next) => {
-    middleware(socket.request, {}, next);
-  };
-  io.use(wrapMiddlewareForSocketIo(passport.initialize()));
-  io.use(wrapMiddlewareForSocketIo(tokenAuth));
+  await initStore();
+
+  const io = require("socket.io")(server, require("./conf"));
+
+  io.use(auth);
 
   io.on("connection", async (socket) => {
-    socket.on("join", (msg) => console.log(socket.request.user));
+    const { user } = socket;
+    console.log(store);
   });
 };

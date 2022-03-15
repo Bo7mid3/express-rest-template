@@ -21,6 +21,7 @@ const schema = new Schema({
     type: String,
     enum: ["Client", "Repairperson"],
   },
+  canSolve: [Number],
   img: {
     data: Buffer,
     contentType: String,
