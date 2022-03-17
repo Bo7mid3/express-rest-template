@@ -11,6 +11,11 @@ module.exports = async (server) => {
 
   io.on("connection", async (socket) => {
     const { user } = socket;
-    console.log(store);
+    if (user.type == "Repairperson") {
+      store.addRepairPerson(user, socket.id);
+      socket.on('disconnect', () => {
+        store.removeRepairPerson(user);
+      });
+    }
   });
 };

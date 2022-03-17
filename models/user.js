@@ -46,8 +46,9 @@ schema.methods.register = async function () {
 };
 
 schema.methods.generateToken = function () {
-  const payload = { email: this.email };
-  const token = jwt.sign(payload, process.env.SECRET_KEY);
+  const payload = this;
+  delete payload.password;
+  const token = jwt.sign(payload.toJSON(), process.env.SECRET_KEY);
   return token;
 };
 
