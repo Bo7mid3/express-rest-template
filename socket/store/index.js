@@ -3,17 +3,28 @@ const ProblemType = require("../../models/problem-type");
 var problemTypes;
 const store = {};
 
-const addRepairPerson = ({ _id, canSolve }, socketId) => {
+const addRepairPerson = (user , socketId) => {
+    const { canSolve, _id } = user;
     for (let problemType of canSolve) {
-        store.problemTypeToRepairperson[problemType].push({ _id, socketId })
+        
+        //remove old sockets
+        let map = store.problemTypeToRepairperson[problemType];
+        store.problemTypeToRepairperson[problemType] = map.filter(elem => elem.user._id != _id);
+
+        store.problemTypeToRepairperson[problemType].push({ user, socketId })
     }
 }
 
-const removeRepairPerson = ({ _id, canSolve }) => {
+const removeRepairPerson = (user, socketId) => {
+    const { canSolve } = user;
     for (let problemType of canSolve) {
         let map = store.problemTypeToRepairperson[problemType];
-        store.problemTypeToRepairperson[problemType] = map.filter(elem => elem._id != _id);
+        store.problemTypeToRepairperson[problemType] = map.filter(elem => elem.socketId != socketId);
     }
+}
+
+const getRepairPersonsByProblemType = (problemTypeId) => {
+    return store.problemTypeToRepairperson[problemTypeId];    
 }
 
 const initStore = async () => {
@@ -23,6 +34,7 @@ const initStore = async () => {
         store.problemTypeToRepairperson[i + 1] = [];
     store.addRepairPerson = addRepairPerson;
     store.removeRepairPerson = removeRepairPerson;
+    store.getRepairPersonsByProblemType = getRepairPersonsByProblemType;
     return;
 }
 

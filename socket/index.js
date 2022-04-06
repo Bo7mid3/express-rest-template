@@ -1,5 +1,6 @@
 const auth = require("./filters/auth");
 const { store, initStore } = require("./store");
+const initRPListStream = require("./streams/rp-list");
 
 module.exports = async (server) => {
 
@@ -11,11 +12,16 @@ module.exports = async (server) => {
 
   io.on("connection", async (socket) => {
     const { user } = socket;
+    console.log("connected")
     if (user.type == "Repairperson") {
       store.addRepairPerson(user, socket.id);
+      console.log(store);
       socket.on('disconnect', () => {
-        store.removeRepairPerson(user);
+        console.log("disconnected")
+        store.removeRepairPerson(user, socket.id);
       });
+      //return;
     }
+    initRPListStream(socket);
   });
 };
