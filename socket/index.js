@@ -1,6 +1,8 @@
 const auth = require("./filters/auth");
 const { store, initStore } = require("./store");
 const initRPListStream = require("./streams/rp-list");
+const chatHandler = require("./services/chat");
+const webRTCHandler = require("./services/webRTC");
 
 module.exports = async (server) => {
 
@@ -13,6 +15,7 @@ module.exports = async (server) => {
   io.on("connection", async (socket) => {
     const { user } = socket;
     console.log("connected")
+    store.addUser(socket);
     if (user.type == "Repairperson") {
       store.addRepairPerson(user, socket.id);
       console.log(store);
@@ -23,5 +26,7 @@ module.exports = async (server) => {
       //return;
     }
     initRPListStream(socket);
+    chatHandler(io, socket);
+    webRTCHandler(io, socket);
   });
 };

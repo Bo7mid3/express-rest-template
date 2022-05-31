@@ -8,12 +8,21 @@ const addRepairPerson = (user , socketId) => {
     for (let problemType of canSolve) {
         
         //remove old sockets
-        let map = store.problemTypeToRepairperson[problemType];
-        store.problemTypeToRepairperson[problemType] = map.filter(elem => elem.user._id != _id);
+        /*let map = store.problemTypeToRepairperson[problemType];
+        store.problemTypeToRepairperson[problemType] = map.filter(elem => elem.user._id != _id);*/
 
         store.problemTypeToRepairperson[problemType].push({ user, socketId })
     }
 }
+
+const getReceiverSocketsIds = ({_id}) => {
+    return store.users.filter(elem => elem.user._id == _id);
+}
+
+const addUser = ({user, id}) => {
+    store.users.push({user, id});
+}
+
 
 const removeRepairPerson = (user, socketId) => {
     const { canSolve } = user;
@@ -28,6 +37,7 @@ const getRepairPersonsByProblemType = (problemTypeId) => {
 }
 
 const initStore = async () => {
+    store.users = [];
     problemTypes = await ProblemType.find({});
     store.problemTypeToRepairperson = {};
     for (let i = 0; i < problemTypes.length; i++)
@@ -35,6 +45,8 @@ const initStore = async () => {
     store.addRepairPerson = addRepairPerson;
     store.removeRepairPerson = removeRepairPerson;
     store.getRepairPersonsByProblemType = getRepairPersonsByProblemType;
+    store.getReceiverSocketsIds = getReceiverSocketsIds;
+    store.addUser = addUser;
     return;
 }
 

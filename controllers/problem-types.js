@@ -1,4 +1,3 @@
-const { ProblemType } = require("../models");
 const { findAll } = require("../services/local/data/problem-type");
 
 module.exports = (app) => {
