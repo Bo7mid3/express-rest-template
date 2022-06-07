@@ -2,7 +2,7 @@ const auth = require("./filters/auth");
 const { store, initStore } = require("./store");
 const initRPListStream = require("./streams/rp-list");
 const chatHandler = require("./services/chat");
-const webRTCHandler = require("./services/webRTC");
+const webRTCHandler = require("./services/webrtc");
 
 module.exports = async (server) => {
 

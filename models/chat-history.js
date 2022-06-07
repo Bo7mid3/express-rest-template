@@ -4,7 +4,7 @@ const { Schema, model } = mongoose;
 const schema = new Schema({
   client: Number,
   repairMan: Number,
-  history: [String]
+  history: [{sender: Number, content: String}]
 });
 
 
